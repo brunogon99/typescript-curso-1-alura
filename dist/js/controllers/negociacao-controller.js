@@ -1,10 +1,12 @@
 import { Negociacao } from "../models/negociacao.js";
 import { Negociacoes } from "../models/negociacoes.js";
+import { MensagemView } from "../views/mensagem-view.js";
 import { NegociacoesView } from "../views/negociacoes-view.js";
 export class NegociacaoController {
     constructor() {
         this.negociacoes = new Negociacoes();
         this.negociacoesView = new NegociacoesView('#negociacoesView');
+        this.mensagemView = new MensagemView('#mensagemView');
         this.inputData = document.querySelector('#data');
         this.inputQuantidade = document.querySelector('#quantidade');
         this.inputValor = document.querySelector('#valor');
@@ -15,6 +17,7 @@ export class NegociacaoController {
         negociacao.data.setDate(10); //atribuindo um valor para utilizar a técnica de progamação defensiva, neste caso é possível realizar tal atribuição pq Date é um metodo e não um tipo liteal como string e o setDate acaba modificando o valor, mesmo com o private ou readonly
         this.negociacoes.adiciona(negociacao);
         this.negociacoesView.update(this.negociacoes);
+        this.mensagemView.update('Negociação adicionada com sucesso!');
         this.limparFormulario();
     }
     criaNegociacao() {

@@ -2,6 +2,9 @@ export class View {
     constructor(selector, escapar) {
         this.escapar = false;
         this.elemento = document.querySelector(selector);
+        if (escapar) {
+            this.escapar = escapar;
+        }
     }
     update(model) {
         let template = this.template(model);

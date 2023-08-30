@@ -25,4 +25,11 @@ export class Negociacao {
     get volume() {
         return this.quantidade * this.valor;
     }
+    static criaDe(dataString, quantidadeString, valorString) {
+        const exp = /-/g; //expressão regular onde serão mapeados todos os hiféns da string
+        const date = new Date(dataString.replace(exp, ','));
+        const quantidade = parseInt(quantidadeString);
+        const valor = parseFloat(valorString);
+        return new Negociacao(date, quantidade, valor);
+    }
 }

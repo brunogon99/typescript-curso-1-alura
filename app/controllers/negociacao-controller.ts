@@ -1,3 +1,4 @@
+import { DiasDaSemana } from "../enums/dias-da-semana.js";
 import { Negociacao } from "../models/negociacao.js";
 import { Negociacoes } from "../models/negociacoes.js";
 import { MensagemView } from "../views/mensagem-view.js";
@@ -20,10 +21,20 @@ export class NegociacaoController {
 
   public adiciona(): void {
     const negociacao = this.criaNegociacao();
-    negociacao.data.setDate(10);//atribuindo um valor para utilizar a técnica de progamação defensiva, neste caso é possível realizar tal atribuição pq Date é um metodo e não um tipo liteal como string e o setDate acaba modificando o valor, mesmo com o private ou readonly
+    if (!this.ehDiaUtil(negociacao.data)) {
+      this.mensagemView.update('Apenas negociações em dias úteis são aceitas!');
+      return;
+    }
+    //negociacao.data.setDate(10); atribuindo um valor para utilizar a técnica de progamação defensiva, neste caso é possível realizar tal atribuição pq Date é um metodo e não um tipo liteal como string e o setDate acaba modificando o valor, mesmo com o private ou readonly
     this.negociacoes.adiciona(negociacao);
     this.limparFormulario();
     this.atualizaView();
+
+  }
+
+  private ehDiaUtil(data: Date) {
+    return data.getDay() > DiasDaSemana.DOMINGO && 
+    data.getDay() < DiasDaSemana.SABADO
   }
 
   private criaNegociacao(): Negociacao {

@@ -33,6 +33,22 @@ export class NegociacaoController {
         return data.getDay() > DiasDaSemana.DOMINGO &&
             data.getDay() < DiasDaSemana.SABADO;
     }
+    importaDados() {
+        fetch('http://localhost:8080/dados')
+            .then(res => {
+            return res.json();
+        })
+            .then((dados) => {
+            return dados.map(dado => {
+                return new Negociacao(new Date(), dado.vezes, dado.montante);
+            });
+        }).then(negociacoesDeHoje => {
+            for (let negociacao of negociacoesDeHoje) {
+                this.negociacoes.adiciona(negociacao);
+            }
+            this.negociacoesView.update(this.negociacoes);
+        });
+    }
     limparFormulario() {
         this.inputData.value = '';
         this.inputQuantidade.value = '';

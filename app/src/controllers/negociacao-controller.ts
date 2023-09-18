@@ -50,7 +50,22 @@ export class NegociacaoController {
     data.getDay() < DiasDaSemana.SABADO
   }
 
-
+  public importaDados(): void {
+    fetch('http://localhost:8080/dados')
+    .then(res => {
+      return res.json()
+    })
+    .then((dados: any[]) => {
+      return dados.map(dado => {
+        return new Negociacao(new Date(), dado.vezes, dado.montante)
+      })
+    }).then(negociacoesDeHoje => {
+      for(let negociacao of negociacoesDeHoje) {
+        this.negociacoes.adiciona(negociacao);
+      }
+      this.negociacoesView.update(this.negociacoes);
+    })
+  }
 
   private limparFormulario(): void {
     this.inputData.value = '';

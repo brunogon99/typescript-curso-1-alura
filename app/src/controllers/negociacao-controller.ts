@@ -5,6 +5,7 @@ import { DiasDaSemana } from "../enums/dias-da-semana.js";
 import { Negociacao } from "../models/negociacao.js";
 import { Negociacoes } from "../models/negociacoes.js";
 import { NegociacaoService } from "../services/negociacao-service.js";
+import { imprimir } from "../utils/imprimir.js";
 import { MensagemView } from "../views/mensagem-view.js";
 import { NegociacoesView } from "../views/negociacoes-view.js";
 
@@ -15,7 +16,7 @@ export class NegociacaoController {
   private inputQuantidade: HTMLInputElement;
   @domInjector('#valor')
   private inputValor: HTMLInputElement;
-  
+
   private negociacoes = new Negociacoes();
   private negociacoesView = new NegociacoesView('#negociacoesView');
   private mensagemView = new MensagemView('#mensagemView');
@@ -43,23 +44,32 @@ export class NegociacaoController {
     }
     //negociacao.data.setDate(10); atribuindo um valor para utilizar a técnica de progamação defensiva, neste caso é possível realizar tal atribuição pq Date é um metodo e não um tipo liteal como string e o setDate acaba modificando o valor, mesmo com o private ou readonly
     this.negociacoes.adiciona(negociacao);
+    imprimir(negociacao, this.negociacoes);
     this.limparFormulario();
     this.atualizaView();
   }
 
   private ehDiaUtil(data: Date) {
-    return data.getDay() > DiasDaSemana.DOMINGO && 
-    data.getDay() < DiasDaSemana.SABADO
+    return data.getDay() > DiasDaSemana.DOMINGO &&
+      data.getDay() < DiasDaSemana.SABADO
   }
 
   public importaDados(): void {
-    this.negociacaoServico.obterNegociacaoDoDia()
-    .then(negociacoesDeHoje => {
-      for(let negociacao of negociacoesDeHoje) {
-        this.negociacoes.adiciona(negociacao);
-      }
-      this.negociacoesView.update(this.negociacoes);
-    })
+    this.negociacaoServico
+      .obterNegociacaoDoDia()
+      .then(negociacoesDeHoje => {
+        return negociacoesDeHoje.filter(negociacoesDeHoje => {
+          return !this.negociacoes
+            .lista()
+            .some(negociacao => negociacao.ehIgual(negociacoesDeHoje))
+        });
+      })
+      .then(negociacoesDeHoje => {
+        for (let negociacao of negociacoesDeHoje) {
+          this.negociacoes.adiciona(negociacao);
+        }
+        this.negociacoesView.update(this.negociacoes);
+      })
   }
 
   private limparFormulario(): void {
